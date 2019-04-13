@@ -139,7 +139,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                             swipeContainer.setRefreshing(false);
                         }
 
-                        pd.dismiss();
                     }
 
                     @Override
@@ -171,7 +170,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                         swipeContainer.setRefreshing(false);
                     }
 
-                    pd.dismiss();
                 }
 
                 @Override

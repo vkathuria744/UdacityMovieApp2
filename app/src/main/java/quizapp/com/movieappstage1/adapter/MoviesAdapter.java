@@ -45,6 +45,8 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHold
             String vote = Double.toString(movieList.get(i).getVoteAverage());
             viewHolder.userrating.setText(vote);
 
+            String poster = " http://image.tmdb.org/t/p/w500" + movieList.get(i).getPosterPath();
+
             Glide.with(mContext)
                     .load(movieList.get(i).getPosterPath())
                     .into(viewHolder.thumbnail);
@@ -63,9 +65,9 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHold
             public MyViewHolder(View view) {
                 super(view);
 
-                title = (TextView) view.findViewById(R.id.title);
-                userrating = (TextView) view.findViewById(R.id.userrating);
-                thumbnail = (ImageView) view.findViewById(R.id.thumbnail);
+                title = view.findViewById(R.id.title);
+                userrating = view.findViewById(R.id.userrating);
+                thumbnail = view.findViewById(R.id.thumbnail);
 
                view.setOnClickListener(new View.OnClickListener() {
                    @Override

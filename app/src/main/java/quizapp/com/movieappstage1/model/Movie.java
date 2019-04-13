@@ -15,7 +15,7 @@ public class Movie {
     @SerializedName("release_date")
     private String releaseDate;
     @SerializedName("genre_ids")
-    private List<Integer> genreIds = new ArrayList<Integer>();
+    private List<Integer> genreIds = new ArrayList<>();
     @SerializedName("id")
     private Integer id;
     @SerializedName("original_title")
@@ -54,10 +54,15 @@ public class Movie {
         this.voteAverage = voteAverage;
 
         }
-            String baseImageUrl = " http://image.tmdb.org/t/p/w500";
+
+            public Movie(){
+
+            }
+
 
             public String getPosterPath() {
-                return " http://image.tmdb.org/t/p/w500" + posterPath;
+
+        return  posterPath;
             }
             public void setPosterPath(String posterPath) {
                 this.posterPath = posterPath;

@@ -28,6 +28,8 @@
                 android:value=".MainActivity"
                 />
         </activity>
+        <activity android:name=".SettingsActivity"
+            android:label="Settings"/>
     </application>
 
 </manifest>

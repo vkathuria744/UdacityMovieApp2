@@ -161,7 +161,7 @@ public class Movie {
         this.video = video;
     }
 
-    public int getVoteAverage() {
+    public Integer getVoteAverage() {
         return voteAverage;
     }
 

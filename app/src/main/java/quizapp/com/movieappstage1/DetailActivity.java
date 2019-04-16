@@ -44,6 +44,10 @@ public class DetailActivity extends AppCompatActivity {
     private Movie favorite;
     private final AppCompatActivity activity = DetailActivity.this;
 
+    Movie movie;
+    String thumbnail, movieName, synopsis, rating, dateOfRelease;
+    int movie_id;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -63,14 +67,16 @@ public class DetailActivity extends AppCompatActivity {
 
 
         Intent intentThatStartedThisActivity = getIntent();
-        if (intentThatStartedThisActivity.hasExtra("original_title")) {
+        if (intentThatStartedThisActivity.hasExtra("movies")) {
 
-            String thumbnail = Objects.requireNonNull(getIntent().getExtras()).getString("poster_path");
-            String movieName = getIntent().getExtras().getString("original_title");
-            String synopsis = getIntent().getExtras().getString("overview");
-            String rating = getIntent().getExtras().getString("vote_average");
-            String dateofRelease = getIntent().getExtras().getString("release_date");
+            movie = getIntent().getParcelableExtra("movies");
 
+            thumbnail = movie.getPosterPath();
+            movieName = movie.getOriginalTitle();
+            synopsis = movie.getOverview();
+            rating = Double.toString(movie.getVoteAverage());
+            dateOfRelease = movie.getReleaseDate();
+            movie_id = movie.getId();
 
             String poster = " http://image.tmdb.org/t/p/w500" + thumbnail;
 
@@ -82,19 +88,23 @@ public class DetailActivity extends AppCompatActivity {
             nameOfMovie.setText(movieName);
             plotSynopsis.setText(synopsis);
             userRating.setText(rating);
-            releaseDate.setText(dateofRelease);
+            releaseDate.setText(dateOfRelease);
         } else {
             Toast.makeText(this, "No API Data", Toast.LENGTH_SHORT).show();
         }
 
-        MaterialFavoriteButton materialFavoriteButton =
-                findViewById(R.id.favorite_button);
+        MaterialFavoriteButton materialFavoriteButtonNice =
+                (MaterialFavoriteButton)findViewById(R.id.favorite_button);
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        materialFavoriteButton.setOnFavoriteChangeListener(
+
+        materialFavoriteButtonNice.setOnFavoriteChangeListener(
+
                 new MaterialFavoriteButton.OnFavoriteChangeListener() {
                     @Override
                     public void onFavoriteChanged(MaterialFavoriteButton buttonView, boolean favorite) {
+
+
 
                         if (favorite) {
                             SharedPreferences.Editor editor = getSharedPreferences("com.quizapp.movieappstage1.DetailActivity", MODE_PRIVATE).edit();
@@ -104,9 +114,9 @@ public class DetailActivity extends AppCompatActivity {
                             saveFavorite();
                             Snackbar.make(buttonView, "Added to Favorite", Snackbar.LENGTH_SHORT).show();
                         }else{
-                            int moive_id = getIntent().getExtras().getInt("id");
+                            int movie_id = getIntent().getExtras().getInt("id");
                             favoriteDbHelper = new FavoriteDbHelper(DetailActivity.this);
-                            favoriteDbHelper.deleteFavorite(moive_id);
+                            favoriteDbHelper.deleteFavorite(movie_id);
 
                             SharedPreferences.Editor editor = getSharedPreferences("com.quizapp.movieappstage1.DetailActivity", MODE_PRIVATE).edit();
                             editor.putBoolean("Favorite Removed", true);
@@ -171,9 +181,13 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void loadJSON() {
-        int movie_id = getIntent().getExtras().getInt("id");
+
 
         try {
+                if (BuildConfig.THE_MOVIE_DB_API_TOKEN.isEmpty()) {
+                    Toast.makeText(getApplicationContext(), "Please obtain your API Key", Toast.LENGTH_SHORT).show();
+                    return;
+                }
             Client Client = new Client();
             Service apiService;
             apiService = quizapp.com.movieappstage1.api.Client.getClient().create(Service.class);
@@ -206,15 +220,14 @@ public class DetailActivity extends AppCompatActivity {
     public void saveFavorite() {
         favoriteDbHelper = new FavoriteDbHelper(activity);
         favorite = new Movie();
-        int movie_id = getIntent().getExtras().getInt("id");
-        String rate = getIntent().getExtras().getString("vote_average");
-        String poster = getIntent().getExtras().getString("poster_path");
+
+        Double rate = movie.getVoteAverage();
 
         favorite.setId(movie_id);
-        favorite.setOriginalTitle(nameOfMovie.getText().toString().trim());
-        favorite.setPosterPath(poster);
-        favorite.setVoteAverage((int) Double.parseDouble(rate));
-        favorite.setOverview(plotSynopsis.getText().toString().trim());
+        favorite.setOriginalTitle(movieName);
+        favorite.setPosterPath(thumbnail);
+        favorite.setVoteAverage(rate);
+        favorite.setOverview(synopsis);
 
         favoriteDbHelper.addFavorite(favorite);
 
